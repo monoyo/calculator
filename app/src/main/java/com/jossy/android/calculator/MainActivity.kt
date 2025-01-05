@@ -21,6 +21,7 @@ class MainActivity : AppCompatActivity() {
         display = findViewById(R.id.resultDisplay)
 
         val buttonClear: Button = findViewById(R.id.buttonClear)
+        val buttonBackSpace: Button = findViewById(R.id.buttonBackSpace)
         val buttonEquals: Button = findViewById(R.id.buttonEquals)
         val buttonRoot: Button = findViewById(R.id.buttonRoot)
         val buttonPercent: Button = findViewById(R.id.buttonPercent)
@@ -46,44 +47,49 @@ class MainActivity : AppCompatActivity() {
         buttons.forEach { (id, value) ->
             findViewById<Button>(id).setOnClickListener { handleInput(value) }
         }
-        buttonClear.setOnClickListener { backspace() }
+        buttonBackSpace.setOnClickListener { backspace() }
         buttonEquals.setOnClickListener { calculateResult() }
         buttonRoot.setOnClickListener { calculateRoot() }
         buttonPercent.setOnClickListener { calculatePercent() }
         buttonDot.setOnClickListener { handleInput(".") }
-        buttonClear.setOnLongClickListener {
-            clear()
-            true
-        }
+        buttonClear.setOnClickListener { clear() }
     }
 
     private fun handleInput(value: String) {
-        if (value in listOf("+", "-", "*", "/")) {
-            if (resultDisplayed) {
-                operator = value
-                operand1 = display.text.toString().toDoubleOrNull()
-                inputValue = ""
-                resultDisplayed = false
-            } else if (operator.isEmpty() && inputValue.isNotEmpty()) {
-                operator = value
-                operand1 = inputValue.toDoubleOrNull()
-                inputValue = ""
-            } else if (operand1 != null && inputValue.isNotEmpty()) {
-                calculateResult()
-                operator = value
-                operand1 = display.text.toString().toDoubleOrNull()
-                inputValue = ""
+        if(inputValue.length <= 9 || value in listOf("+", "-", "*", "/") && inputValue != "-") {
+            if (value == "-" && operator.isEmpty() && inputValue.isEmpty()) {
+                if (!resultDisplayed)
+                    inputValue = value
+                else {
+                    operator = value
+                }
+            } else if (value in listOf("+", "-", "*", "/") && inputValue != "-") {
+                if (resultDisplayed) {
+                    operator = value
+                    operand1 = display.text.toString().toDoubleOrNull()
+                    inputValue = ""
+                    resultDisplayed = false
+                } else if (operator.isEmpty() && inputValue.isNotEmpty()) {
+                    operator = value
+                    operand1 = inputValue.toDoubleOrNull()
+                    inputValue = ""
+                } else if (operand1 != null && inputValue.isNotEmpty()) {
+                    calculateResult()
+                    operator = value
+                    operand1 = display.text.toString().toDoubleOrNull()
+                    inputValue = ""
+                }
+            } else if (!(inputValue.contains(".") && value == ".") && value != "-") {
+                if (resultDisplayed) {
+                    inputValue = value
+                    resultDisplayed = false
+                } else {
+                    inputValue += value
+                    inputValue = inputValue.trimLeadingZeros()
+                }
             }
-        } else {
-            if (resultDisplayed) {
-                inputValue = value
-                resultDisplayed = false
-            } else {
-                inputValue += value
-                inputValue = inputValue.trimLeadingZeros()
-            }
+            updateDisplay()
         }
-        updateDisplay()
     }
 
     private fun calculateResult() {
@@ -137,10 +143,13 @@ class MainActivity : AppCompatActivity() {
     private fun backspace() {
         if (inputValue.isNotEmpty()) {
             inputValue = inputValue.dropLast(1)
-        } else if (operator.isNotEmpty()) {
-            operator = ""
-        } else if (operand1 != null) {
-            operand1 = null
+        } else {
+            if (operator.isNotEmpty()) {
+                operator = ""
+            }
+            if (operand1 != null) {
+                operand1 = null
+            }
         }
         updateDisplay()
     }
