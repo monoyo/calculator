@@ -30,7 +30,6 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:maxLength="8"
         android:layout_marginBottom="16dp"
         android:layout_weight="0"
         android:gravity="end"

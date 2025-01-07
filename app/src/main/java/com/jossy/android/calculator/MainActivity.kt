@@ -56,7 +56,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun handleInput(value: String) {
-        if(inputValue.length <= 9 || value in listOf("+", "-", "*", "/") && inputValue != "-") {
+        if(inputValue.length <= 8 || value in listOf("+", "-", "*", "/") && inputValue != "-") {
             if (value == "-" && operator.isEmpty() && inputValue.isEmpty()) {
                 if (!resultDisplayed)
                     inputValue = value
